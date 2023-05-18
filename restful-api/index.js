@@ -3,6 +3,24 @@ const http = require('http');
 const url = require('url');
 const StringDecoder = require('string_decoder').StringDecoder;
 
+// Define the handlers
+const handlers = {};
+handlers.sample = function (data, callback) {
+  // Callback a http status code and a payload 
+  callback(406, { name: 'My name is sample handler' });
+};
+
+// Not found handler
+handlers.notFound = function (data, callback) {
+  callback(404);
+};
+
+
+// Define a request router
+const router = {
+  'sample': handlers.sample
+};
+
 // The server should respond to all request with a string
 const server = http.createServer(function (req, res) {
   // Get the url and parse it
@@ -31,16 +49,45 @@ const server = http.createServer(function (req, res) {
   req.on('end', function () {
     buffer += decoder.end();
 
-    // Send the response
-    res.end('Hello World\n');
+    // Choose the handler this request should go to. If not was is found  use the notFound handler
 
-    // Log the request path
-    console.log({
-      path: trimmedPath,
+    const chosenHandler = typeof (router[trimmedPath]) !== 'undefined'
+      ? router[trimmedPath]
+      : handlers.notFound;
+
+    // Construct data object to send to the handler
+    const data = {
+      trimmedPath,
+      queryStringObject,
       method,
-      queryStringParameters: queryStringObject,
       headers,
-      payload: buffer,
+      payload: buffer
+    };
+
+    // Route the request to the handler specified in the router
+    chosenHandler(data, function (statusCode, payload) {
+      // Use status code called by the handler, or default to 200
+      statusCode = typeof (statusCode) == 'number'
+        ? statusCode
+        : 200;
+
+      // Use the payload called by the handler, or default to empty object
+      payload = typeof (payload) == 'object'
+        ? payload
+        : {};
+
+      // Convert the payload to a string
+      const payloadString = JSON.stringify(payload);
+
+      // Return the response
+      res.writeHead(statusCode);
+      res.end(payloadString);
+
+      // Log the request
+      console.log({
+        statusCode,
+        payload,
+      });
     });
   });
 });
