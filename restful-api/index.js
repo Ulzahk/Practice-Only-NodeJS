@@ -5,12 +5,14 @@ const url = require('url');
 const StringDecoder = require('string_decoder').StringDecoder;
 const config = require('./config');
 const fs = require('fs');
+const _data = require('./lib/data');
 
 // Define the handlers
 const handlers = {};
-handlers.sample = function (data, callback) {
-  // Callback a http status code and a payload 
-  callback(406, { name: 'My name is sample handler' });
+
+// Ping handler
+handlers.ping = function (data, callback) {
+  callback(200);
 };
 
 // Not found handler
@@ -18,10 +20,10 @@ handlers.notFound = function (data, callback) {
   callback(404);
 };
 
-
 // Define a request router
 const router = {
-  'sample': handlers.sample
+  'sample': handlers.sample,
+  'ping': handlers.ping,
 };
 
 // Instantiate the http server
