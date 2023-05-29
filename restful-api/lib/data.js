@@ -3,6 +3,7 @@
 // Dependencies
 const fs = require('fs');
 const path = require('path');
+const helpers = require('./helpers');
 
 // Container for the module (to be exported)
 const lib = {};
@@ -41,7 +42,12 @@ lib.create = function (dir, file, data, callback) {
 // Read data from a file
 lib.read = function (dir, file, callback) {
   fs.readFile(lib.baseDir + dir + '/' + file + '.json', 'utf8', function (err, data) {
-    callback(err, data);
+    if (!err && data) {
+      const parsedData = helpers.parseJsonToObject(data);
+      callback(false, parsedData);
+    } else {
+      callback(err, data);
+    }
   });
 };
 
@@ -49,12 +55,12 @@ lib.read = function (dir, file, callback) {
 lib.update = function (dir, file, data, callback) {
   // Open the file for writing
   fs.open(lib.baseDir + dir + '/' + file + '.json', 'r+', function (err, fileDescriptor) {
-    if (!err) {
+    if (!err && fileDescriptor) {
       // Convert data to string
       const stringData = JSON.stringify(data);
 
       // Truncate the file
-      fs.ftruncate(fileDescriptor, function (err) {
+      fs.truncate(fileDescriptor, function (err) {
         if (!err) {
           // Write the file and close it
           fs.writeFile(fileDescriptor, stringData, function (err) {
@@ -74,7 +80,6 @@ lib.update = function (dir, file, data, callback) {
           callback('Error truncating file');
         }
       });
-
     } else {
       callback('Could not open the file for update, it may not exis yet');
     }
