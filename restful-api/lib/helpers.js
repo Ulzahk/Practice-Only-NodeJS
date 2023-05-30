@@ -27,4 +27,25 @@ helpers.parseJsonToObject = function (string) {
   }
 };
 
+// Create a string of random alphanumeric characters of a given length
+helpers.createRandomString = function (stringLength) {
+  stringLength = typeof (stringLength) === 'number' && stringLength > 0 ? stringLength : false;
+  if (stringLength) {
+    // Defined all the possible characters that could go into a string
+    const possibleCharacters = 'abcdefghijklmnopqrstuvwxyz0123456789';
+
+    // Start the final string
+    let string = '';
+    for (i = 1; i <= stringLength; i++) {
+      // Get a random character from the possibleCharacters string
+      const randomCharacter = possibleCharacters.charAt(Math.floor(Math.random() * possibleCharacters.length));
+      // Append this character to the final string
+      string += randomCharacter;
+    }
+    return string;
+  } else {
+    return false;
+  }
+};
+
 module.exports = helpers;

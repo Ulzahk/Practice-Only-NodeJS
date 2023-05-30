@@ -12,6 +12,7 @@ const helpers = require('./lib/helpers');
 const router = {
   'ping': handlers.ping,
   'users': handlers.users,
+  'tokens': handlers.tokens,
 };
 
 // Instantiate the http server
