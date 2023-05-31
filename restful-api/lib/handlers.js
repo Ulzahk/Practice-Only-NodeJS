@@ -3,6 +3,7 @@
 // Dependencies
 const _data = require('./data');
 const helpers = require('./helpers');
+const config = require('./config');
 
 // Define the handlers
 const handlers = {};
@@ -342,6 +343,128 @@ handlers._users.delete = function (data, callback) {
         });
       } else {
         callback(403, { 'Error': 'Missing required token in header or token is invalid' });
+      }
+    });
+  } else {
+    callback(400, { 'Error': 'Missing required field' });
+  }
+};
+
+// Checks
+handlers.checks = function (data, callback) {
+  const acceptableMethods = ['get', 'post', 'put', 'delete'];
+  if (acceptableMethods.includes(data.method)) {
+    handlers._checks[data.method](data, callback);
+  } else {
+    callback(405);
+  }
+};
+
+// Container for all the checks methods
+handlers._checks = {};
+
+// Checks - post
+// Required data: protocol, url, method, successCode, timeoutSeconds
+// Optional data: none
+handlers._checks.post = function (data, callback) {
+  // Validate inputs
+  const protocol = typeof (data.payload.protocol) == 'string' && ['https', 'http'].indexOf(data.payload.protocol) > -1 ? data.payload.protocol : false;
+  const url = typeof (data.payload.url) == 'string' && data.payload.url.trim().length > 0 ? data.payload.url.trim() : false;
+  const method = typeof (data.payload.method) == 'string' && ['get', 'post', 'put', 'delete'].indexOf(data.payload.method) > -1 ? data.payload.method : false;
+  const successCodes = typeof (data.payload.successCodes) == 'object' && data.payload.successCodes instanceof Array && data.payload.successCodes.length > 0 ? data.payload.successCodes : false;
+  const timeoutSeconds = typeof (data.payload.timeoutSeconds) == 'number' && data.payload.timeoutSeconds % 1 === 0 && data.payload.timeoutSeconds >= 1 && data.payload.timeoutSeconds <= 5 ? data.payload.timeoutSeconds : false;
+
+  if (protocol && url && method && successCodes && timeoutSeconds) {
+    // Get the token from the headers
+    const token = typeof (data.headers.token) == 'string' ? data.headers.token : false;
+
+    // Lookup the user by reading the token
+    _data.read('tokens', token, function (err, tokenData) {
+      if (!err && tokenData) {
+        const userPhone = tokenData.phone;
+
+        // Lookup the user data
+        _data.read('users', userPhone, function (err, userData) {
+          if (!err && tokenData) {
+            const userChecks = typeof (userData.checks) == 'object' && userData.checks instanceof Array ? userData.checks : [];
+            // Verify that the user has less than the number of max-checks-per-user
+
+            if (userChecks.length < config.maxChecks) {
+              // Create a random id for the check
+              const checkId = helpers.createRandomString(20);
+
+              // Create the check object and include user's phone
+              const checkObject = {
+                'id': checkId,
+                'userPhone': userPhone,
+                'protocol': protocol,
+                'url': url,
+                'method': method,
+                'successCodes': successCodes,
+                'timeourSeconds': timeoutSeconds,
+              };
+
+              // Save the object
+              _data.create('checks', checkId, checkObject, function (err) {
+                if (!err) {
+                  // Add the checkId to the users's object
+                  userData.checks = userChecks;
+                  userData.checks.push(checkId);
+
+                  // Save the new userData
+                  _data.update('users', userPhone, userData, function (err) {
+                    if (!err) {
+                      // Return the data about the new check
+                      callback(200, checkObject);
+                    } else {
+                      callback(500, { 'Error': 'Could not update the user with the new check' });
+                    }
+                  });
+                } else {
+                  callback(500, { 'Error': 'Could not create the new check' });
+                }
+              });
+            } else {
+              callback(400, { 'Error': `The user already has the maximun number of checks (${config.maxChecks})` });
+            }
+
+          } else {
+            callback(403);
+          }
+        });
+      } else {
+        callback(403);
+      }
+    });
+  } else {
+    callback(400, { 'Error': 'Missing required inputs or inputs are invalid' });
+  }
+};
+
+// Checks - get
+// Required data: id
+// Optional data: none
+handlers._checks.get = function (data, callback) {
+  // Check that the phone number is valid
+  const id = typeof (data.queryStringObject.id) == 'string' && data.queryStringObject.id.trim().length == 20 ? data.queryStringObject.id.trim() : false;
+  if (id) {
+    // Lookup the check
+    _data.read('checks', id, function (err, checkData) {
+      if (!err && checkData) {
+        // Get the token from the headers
+        const token = typeof (data.headers.token) == 'string' ? data.headers.token : false;
+
+        // Verify that the given token is valid and belongs to the user who created the check
+        handlers._tokens.verifyToken(token, checkData.userPhone, function (tokenIsValid) {
+          if (tokenIsValid) {
+            // Return the check data
+            callback(200, checkData);
+          } else {
+            callback(403);
+          }
+        });
+      } else {
+        callback(404);
       }
     });
   } else {
