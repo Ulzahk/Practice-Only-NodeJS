@@ -10,6 +10,11 @@ environments.staging = {
   'envName': 'staging',
   'hashingSecret': 'thisIsASecret',
   'maxChecks': 5,
+  'twilio': {
+    'accountSid': '',
+    'authToken': '',
+    'fromPhone': ''
+  }
 };
 
 // Production environment
@@ -19,6 +24,11 @@ environments.production = {
   'envName': 'production',
   'hashingSecret': 'thisIsASecret',
   'maxChecks': 5,
+  'twilio': {
+    'accountSid': '',
+    'authToken': '',
+    'fromPhone': ''
+  }
 };
 
 // Determine which environment was passed as a command-line argument

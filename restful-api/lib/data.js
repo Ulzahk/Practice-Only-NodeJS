@@ -98,5 +98,16 @@ lib.delete = function (dir, file, callback) {
   });
 };
 
+// List all the items in a directory
+lib.list = function (dir, callback) {
+  fs.readdir(lib.baseDir + dir + '/', function (err, data) {
+    if (!err && data && data.length > 0) {
+
+    } else {
+      callback(err, data);
+    }
+  });
+};
+
 // Export the module
 module.exports = lib;
