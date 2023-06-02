@@ -424,7 +424,7 @@ handlers._checks.post = function (data, callback) {
                 'url': url,
                 'method': method,
                 'successCodes': successCodes,
-                'timeourSeconds': timeoutSeconds,
+                'timeoutSeconds': timeoutSeconds,
               };
 
               // Save the object

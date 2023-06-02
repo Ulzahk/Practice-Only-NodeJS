@@ -102,7 +102,12 @@ lib.delete = function (dir, file, callback) {
 lib.list = function (dir, callback) {
   fs.readdir(lib.baseDir + dir + '/', function (err, data) {
     if (!err && data && data.length > 0) {
+      const trimmedFileNames = [];
+      data.forEach(function (fileName) {
+        trimmedFileNames.push(fileName.replace('.json', ''));
+      });
 
+      callback(false, trimmedFileNames);
     } else {
       callback(err, data);
     }
