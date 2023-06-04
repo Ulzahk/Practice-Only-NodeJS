@@ -8,6 +8,46 @@ const config = require('./config');
 // Define the handlers
 const handlers = {};
 
+/*
+ *  HTML HANDLERS
+ */
+
+// Index handler
+handlers.index = function (data, callback) {
+  // Reject any request that isn't a GET
+  if (data.method == 'get') {
+    // Prepare data for interpolation
+    const templateData = {
+      'head.title': 'This is a title',
+      'head.description': 'This is a meta description',
+      'body.title': 'Hello templated world',
+      'body.class': 'index'
+    };
+
+    // Read in a teamplate as a string
+    helpers.getTemplate('index', templateData, function (err, string) {
+      if (!err && string) {
+        // Add the universal header and footer
+        helpers.addUniversalTemplates(string, templateData, function (err, string) {
+          if (!err && string) {
+            callback(200, string, 'html');
+          } else {
+            callback(500, undefined, 'html');
+          }
+        });
+      } else {
+        callback(500, undefined, 'html');
+      }
+    });
+  } else {
+    callback(405, undefined, 'html');
+  }
+};
+
+/*
+ *  JSON API HANDLERS
+ */
+
 // Tokens
 handlers.tokens = function (data, callback) {
   const acceptableMethods = ['get', 'post', 'put', 'delete'];
