@@ -105,6 +105,11 @@ handlers.public = function (data, callback) {
  *  JSON API HANDLERS
  */
 
+// Ping
+handlers.ping = function (data, callback) {
+  callback(200);
+};
+
 // Tokens
 handlers.tokens = function (data, callback) {
   const acceptableMethods = ['get', 'post', 'put', 'delete'];
