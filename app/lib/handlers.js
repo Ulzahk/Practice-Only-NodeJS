@@ -74,6 +74,37 @@ handlers.accountCreate = function (data, callback) {
   }
 };
 
+// Create new session
+handlers.sessionCreate = function (data, callback) {
+  // Reject any request that isn't a GET
+  if (data.method == 'get') {
+    // Prepare data for interpolation
+    const templateData = {
+      'head.title': 'Login to your account',
+      'head.description': 'Please enter your phone number and password to access to your account',
+      'body.class': 'sessionCreate'
+    };
+
+    // Read in a teamplate as a string
+    helpers.getTemplate('sessionCreate', templateData, function (err, string) {
+      if (!err && string) {
+        // Add the universal header and footer
+        helpers.addUniversalTemplates(string, templateData, function (err, string) {
+          if (!err && string) {
+            callback(200, string, 'html');
+          } else {
+            callback(500, undefined, 'html');
+          }
+        });
+      } else {
+        callback(500, undefined, 'html');
+      }
+    });
+  } else {
+    callback(405, undefined, 'html');
+  }
+};
+
 // Favicon
 handlers.favicon = function (data, callback) {
   // Reject any request that isn't a GET;
