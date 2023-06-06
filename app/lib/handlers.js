@@ -18,14 +18,44 @@ handlers.index = function (data, callback) {
   if (data.method == 'get') {
     // Prepare data for interpolation
     const templateData = {
-      'head.title': 'This is a title',
-      'head.description': 'This is a meta description',
-      'body.title': 'Hello templated world',
+      'head.title': 'Uptime Monitoring - Made Simple',
+      'head.description': 'We offer free, simple uptime monitoring for HTTP/HTTPS sites all kinds. When your site goes down, we\'ll send you a text to let you know',
       'body.class': 'index'
     };
 
     // Read in a teamplate as a string
     helpers.getTemplate('index', templateData, function (err, string) {
+      if (!err && string) {
+        // Add the universal header and footer
+        helpers.addUniversalTemplates(string, templateData, function (err, string) {
+          if (!err && string) {
+            callback(200, string, 'html');
+          } else {
+            callback(500, undefined, 'html');
+          }
+        });
+      } else {
+        callback(500, undefined, 'html');
+      }
+    });
+  } else {
+    callback(405, undefined, 'html');
+  }
+};
+
+// Create account
+handlers.accountCreate = function (data, callback) {
+  // Reject any request that isn't a GET
+  if (data.method == 'get') {
+    // Prepare data for interpolation
+    const templateData = {
+      'head.title': 'Create an account',
+      'head.description': 'Signup is easy and only takes a few seconds',
+      'body.class': 'accountCreate'
+    };
+
+    // Read in a teamplate as a string
+    helpers.getTemplate('accountCreate', templateData, function (err, string) {
       if (!err && string) {
         // Add the universal header and footer
         helpers.addUniversalTemplates(string, templateData, function (err, string) {
