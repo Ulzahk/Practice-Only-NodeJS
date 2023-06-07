@@ -197,6 +197,96 @@ handlers.accountDeleted = function (data, callback) {
   }
 };
 
+// Create a new check
+handlers.checksCreate = function (data, callback) {
+  // Reject any request that isn't a GET
+  if (data.method == 'get') {
+    // Prepare data for interpolation
+    const templateData = {
+      'head.title': 'Create A New Check',
+      'body.class': 'checksCreate'
+    };
+
+    // Read in a teamplate as a string
+    helpers.getTemplate('checksCreate', templateData, function (err, string) {
+      if (!err && string) {
+        // Add the universal header and footer
+        helpers.addUniversalTemplates(string, templateData, function (err, string) {
+          if (!err && string) {
+            callback(200, string, 'html');
+          } else {
+            callback(500, undefined, 'html');
+          }
+        });
+      } else {
+        callback(500, undefined, 'html');
+      }
+    });
+  } else {
+    callback(405, undefined, 'html');
+  }
+};
+
+// Dashboard (view all checks)
+handlers.checksList = function (data, callback) {
+  // Reject any request that isn't a GET
+  if (data.method == 'get') {
+    // Prepare data for interpolation
+    const templateData = {
+      'head.title': 'Dashboard',
+      'body.class': 'checksList'
+    };
+
+    // Read in a teamplate as a string
+    helpers.getTemplate('checksList', templateData, function (err, string) {
+      if (!err && string) {
+        // Add the universal header and footer
+        helpers.addUniversalTemplates(string, templateData, function (err, string) {
+          if (!err && string) {
+            callback(200, string, 'html');
+          } else {
+            callback(500, undefined, 'html');
+          }
+        });
+      } else {
+        callback(500, undefined, 'html');
+      }
+    });
+  } else {
+    callback(405, undefined, 'html');
+  }
+};
+
+// Dashboard (view all checks)
+handlers.checksEdit = function (data, callback) {
+  // Reject any request that isn't a GET
+  if (data.method == 'get') {
+    // Prepare data for interpolation
+    const templateData = {
+      'head.title': 'Check Details',
+      'body.class': 'checksEdit'
+    };
+
+    // Read in a teamplate as a string
+    helpers.getTemplate('checksEdit', templateData, function (err, string) {
+      if (!err && string) {
+        // Add the universal header and footer
+        helpers.addUniversalTemplates(string, templateData, function (err, string) {
+          if (!err && string) {
+            callback(200, string, 'html');
+          } else {
+            callback(500, undefined, 'html');
+          }
+        });
+      } else {
+        callback(500, undefined, 'html');
+      }
+    });
+  } else {
+    callback(405, undefined, 'html');
+  }
+};
+
 // Favicon
 handlers.favicon = function (data, callback) {
   // Reject any request that isn't a GET;
