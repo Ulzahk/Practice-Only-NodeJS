@@ -8,6 +8,351 @@ const config = require('./config');
 // Define the handlers
 const handlers = {};
 
+/*
+ *  HTML HANDLERS
+ */
+
+// Index handler
+handlers.index = function (data, callback) {
+  // Reject any request that isn't a GET
+  if (data.method == 'get') {
+    // Prepare data for interpolation
+    const templateData = {
+      'head.title': 'Uptime Monitoring - Made Simple',
+      'head.description': 'We offer free, simple uptime monitoring for HTTP/HTTPS sites all kinds. When your site goes down, we\'ll send you a text to let you know',
+      'body.class': 'index'
+    };
+
+    // Read in a teamplate as a string
+    helpers.getTemplate('index', templateData, function (err, string) {
+      if (!err && string) {
+        // Add the universal header and footer
+        helpers.addUniversalTemplates(string, templateData, function (err, string) {
+          if (!err && string) {
+            callback(200, string, 'html');
+          } else {
+            callback(500, undefined, 'html');
+          }
+        });
+      } else {
+        callback(500, undefined, 'html');
+      }
+    });
+  } else {
+    callback(405, undefined, 'html');
+  }
+};
+
+// Create account
+handlers.accountCreate = function (data, callback) {
+  // Reject any request that isn't a GET
+  if (data.method == 'get') {
+    // Prepare data for interpolation
+    const templateData = {
+      'head.title': 'Create an account',
+      'head.description': 'Signup is easy and only takes a few seconds',
+      'body.class': 'accountCreate'
+    };
+
+    // Read in a teamplate as a string
+    helpers.getTemplate('accountCreate', templateData, function (err, string) {
+      if (!err && string) {
+        // Add the universal header and footer
+        helpers.addUniversalTemplates(string, templateData, function (err, string) {
+          if (!err && string) {
+            callback(200, string, 'html');
+          } else {
+            callback(500, undefined, 'html');
+          }
+        });
+      } else {
+        callback(500, undefined, 'html');
+      }
+    });
+  } else {
+    callback(405, undefined, 'html');
+  }
+};
+
+// Create new session
+handlers.sessionCreate = function (data, callback) {
+  // Reject any request that isn't a GET
+  if (data.method == 'get') {
+    // Prepare data for interpolation
+    const templateData = {
+      'head.title': 'Login to your account',
+      'head.description': 'Please enter your phone number and password to access to your account',
+      'body.class': 'sessionCreate'
+    };
+
+    // Read in a teamplate as a string
+    helpers.getTemplate('sessionCreate', templateData, function (err, string) {
+      if (!err && string) {
+        // Add the universal header and footer
+        helpers.addUniversalTemplates(string, templateData, function (err, string) {
+          if (!err && string) {
+            callback(200, string, 'html');
+          } else {
+            callback(500, undefined, 'html');
+          }
+        });
+      } else {
+        callback(500, undefined, 'html');
+      }
+    });
+  } else {
+    callback(405, undefined, 'html');
+  }
+};
+
+// Session has been deleted
+handlers.sessionDeleted = function (data, callback) {
+  // Reject any request that isn't a GET
+  if (data.method == 'get') {
+    // Prepare data for interpolation
+    const templateData = {
+      'head.title': 'Log out',
+      'head.description': 'You have been log out of your account',
+      'body.class': 'sessionDeleted'
+    };
+
+    // Read in a teamplate as a string
+    helpers.getTemplate('sessionDeleted', templateData, function (err, string) {
+      if (!err && string) {
+        // Add the universal header and footer
+        helpers.addUniversalTemplates(string, templateData, function (err, string) {
+          if (!err && string) {
+            callback(200, string, 'html');
+          } else {
+            callback(500, undefined, 'html');
+          }
+        });
+      } else {
+        callback(500, undefined, 'html');
+      }
+    });
+  } else {
+    callback(405, undefined, 'html');
+  }
+};
+
+// Edit your account
+handlers.accountEdit = function (data, callback) {
+  // Reject any request that isn't a GET
+  if (data.method == 'get') {
+    // Prepare data for interpolation
+    const templateData = {
+      'head.title': 'Account Settings',
+      'body.class': 'accountEdit'
+    };
+
+    // Read in a teamplate as a string
+    helpers.getTemplate('accountEdit', templateData, function (err, string) {
+      if (!err && string) {
+        // Add the universal header and footer
+        helpers.addUniversalTemplates(string, templateData, function (err, string) {
+          if (!err && string) {
+            callback(200, string, 'html');
+          } else {
+            callback(500, undefined, 'html');
+          }
+        });
+      } else {
+        callback(500, undefined, 'html');
+      }
+    });
+  } else {
+    callback(405, undefined, 'html');
+  }
+};
+
+// Account has been deleted
+handlers.accountDeleted = function (data, callback) {
+  // Reject any request that isn't a GET
+  if (data.method == 'get') {
+    // Prepare data for interpolation
+    const templateData = {
+      'head.title': 'Account Deleted',
+      'head.description': 'Your account has been deleted',
+      'body.class': 'accountDeleted'
+    };
+
+    // Read in a teamplate as a string
+    helpers.getTemplate('accountDeleted', templateData, function (err, string) {
+      if (!err && string) {
+        // Add the universal header and footer
+        helpers.addUniversalTemplates(string, templateData, function (err, string) {
+          if (!err && string) {
+            callback(200, string, 'html');
+          } else {
+            callback(500, undefined, 'html');
+          }
+        });
+      } else {
+        callback(500, undefined, 'html');
+      }
+    });
+  } else {
+    callback(405, undefined, 'html');
+  }
+};
+
+// Create a new check
+handlers.checksCreate = function (data, callback) {
+  // Reject any request that isn't a GET
+  if (data.method == 'get') {
+    // Prepare data for interpolation
+    const templateData = {
+      'head.title': 'Create A New Check',
+      'body.class': 'checksCreate'
+    };
+
+    // Read in a teamplate as a string
+    helpers.getTemplate('checksCreate', templateData, function (err, string) {
+      if (!err && string) {
+        // Add the universal header and footer
+        helpers.addUniversalTemplates(string, templateData, function (err, string) {
+          if (!err && string) {
+            callback(200, string, 'html');
+          } else {
+            callback(500, undefined, 'html');
+          }
+        });
+      } else {
+        callback(500, undefined, 'html');
+      }
+    });
+  } else {
+    callback(405, undefined, 'html');
+  }
+};
+
+// Dashboard (view all checks)
+handlers.checksList = function (data, callback) {
+  // Reject any request that isn't a GET
+  if (data.method == 'get') {
+    // Prepare data for interpolation
+    const templateData = {
+      'head.title': 'Dashboard',
+      'body.class': 'checksList'
+    };
+
+    // Read in a teamplate as a string
+    helpers.getTemplate('checksList', templateData, function (err, string) {
+      if (!err && string) {
+        // Add the universal header and footer
+        helpers.addUniversalTemplates(string, templateData, function (err, string) {
+          if (!err && string) {
+            callback(200, string, 'html');
+          } else {
+            callback(500, undefined, 'html');
+          }
+        });
+      } else {
+        callback(500, undefined, 'html');
+      }
+    });
+  } else {
+    callback(405, undefined, 'html');
+  }
+};
+
+// Dashboard (view all checks)
+handlers.checksEdit = function (data, callback) {
+  // Reject any request that isn't a GET
+  if (data.method == 'get') {
+    // Prepare data for interpolation
+    const templateData = {
+      'head.title': 'Check Details',
+      'body.class': 'checksEdit'
+    };
+
+    // Read in a teamplate as a string
+    helpers.getTemplate('checksEdit', templateData, function (err, string) {
+      if (!err && string) {
+        // Add the universal header and footer
+        helpers.addUniversalTemplates(string, templateData, function (err, string) {
+          if (!err && string) {
+            callback(200, string, 'html');
+          } else {
+            callback(500, undefined, 'html');
+          }
+        });
+      } else {
+        callback(500, undefined, 'html');
+      }
+    });
+  } else {
+    callback(405, undefined, 'html');
+  }
+};
+
+// Favicon
+handlers.favicon = function (data, callback) {
+  // Reject any request that isn't a GET;
+  if (data.method == 'get') {
+    // Read in the favicon's data
+    helpers.getStaticAsset('favicon.ico', function (err, data) {
+      if (!err && data) {
+        // Callback the data
+        callback(200, data, 'favicon');
+      } else {
+        callback(500);
+      }
+    });
+  } else {
+    callback(405);
+  }
+};
+
+// Public assets
+handlers.public = function (data, callback) {
+  // Reject any request that isn't a GET
+  if (data.method == 'get') {
+    const trimmedAssetName = data.trimmedPath.replace('public/', '').trim();
+
+    if (trimmedAssetName.length > 0) {
+      // Read in the asset's data
+      helpers.getStaticAsset(trimmedAssetName, function (err, data) {
+        if (!err && data) {
+          // Determine the content type (default to plain text)
+          let contentType = 'plain';
+
+          if (trimmedAssetName.indexOf('.css') > -1) {
+            contentType = 'css';
+          }
+          if (trimmedAssetName.indexOf('.png') > -1) {
+            contentType = 'png';
+          }
+          if (trimmedAssetName.indexOf('.jpg') > -1) {
+            contentType = 'jpg';
+          }
+          if (trimmedAssetName.indexOf('.ico') > -1) {
+            contentType = 'favicon';
+          }
+
+          callback(200, data, contentType);
+        } else {
+          callback(404);
+        }
+      });
+    } else {
+      callback(404);
+    }
+  } else {
+    callback(405);
+  }
+};
+
+/*
+ *  JSON API HANDLERS
+ */
+
+// Ping
+handlers.ping = function (data, callback) {
+  callback(200);
+};
+
 // Tokens
 handlers.tokens = function (data, callback) {
   const acceptableMethods = ['get', 'post', 'put', 'delete'];
