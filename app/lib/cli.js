@@ -11,6 +11,96 @@ const e = new _events;
 
 const cli = {};
 
+// Input handlers
+e.on('man', function (string) {
+  cli.responders.help();
+});
+
+e.on('help', function (string) {
+  cli.responders.help();
+});
+
+e.on('exit', function (string) {
+  cli.responders.exit();
+});
+
+e.on('stats', function (string) {
+  cli.responders.stats();
+});
+
+e.on('list users', function (string) {
+  cli.responders.listUsers();
+});
+
+e.on('more user info', function (string) {
+  cli.responders.moreUserInfo(string);
+});
+
+e.on('list checks', function (string) {
+  cli.responders.listChecks(string);
+});
+
+e.on('more check info', function (string) {
+  cli.responders.moreCheckInfo(string);
+});
+
+e.on('list logs', function (string) {
+  cli.responders.listLogs();
+});
+
+e.on('more log info', function (string) {
+  cli.responders.moreLogInfo(string);
+});
+
+
+// Responders object
+cli.responders = {};
+
+// Help / Man
+cli.responders.help = function () {
+  console.log('You asked for help');
+};
+
+// Exit
+cli.responders.exit = function () {
+  console.log('You asked for exit');
+};
+
+// Stats
+cli.responders.stats = function () {
+  console.log('You asked for stats');
+};
+
+// Lists users
+cli.responders.listUsers = function () {
+  console.log('You asked to list users');
+};
+
+// More user info
+cli.responders.moreUserInfo = function (string) {
+  console.log('You asked for more user info', string);
+};
+
+// List checks
+cli.responders.listChecks = function (string) {
+  console.log('You asked to list checks', string);
+};
+
+// More check info
+cli.responders.moreCheckInfo = function (string) {
+  console.log('You asked for more check info', string);
+};
+
+// List logs
+cli.responders.listLogs = function () {
+  console.log('You asked to list logs');
+};
+
+// More logs info
+cli.responders.moreLogInfo = function (string) {
+  console.log('You asked for more log info', string);
+};
+
 // Input processor
 cli.processInput = function (string) {
   string = typeof (string) == 'string' && string.trim().length > 0 ? string.trim() : false;
@@ -20,7 +110,7 @@ cli.processInput = function (string) {
     const uniqueInputs = [
       'man',
       'help',
-      'exits',
+      'exit',
       'stats',
       'list users',
       'more user info',
