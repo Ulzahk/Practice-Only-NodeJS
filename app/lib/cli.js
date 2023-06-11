@@ -8,6 +8,8 @@ const events = require('events');
 const os = require('os');
 const v8 = require('v8');
 const _data = require('./data');
+const _logs = require('./logs');
+const helpers = require('./helpers');
 
 class _events extends events { };
 const e = new _events;
@@ -70,7 +72,7 @@ cli.responders.help = function () {
     'more user info --{userId}': 'Show details of a specific user',
     'list checks --up --down': 'Show a list of all the active checks in the system, included their state. The "--up" and "--down" flags are both optional',
     'more check info --{checkId}': 'Show details of a specified check',
-    'list logs': 'Show a list of all the logs files available to be read (compress and uncompressed)',
+    'list logs': 'Show a list of all the logs files available to be read (compress)',
     'more log info --{fileName}': 'Show details of a specified log file',
   };
 
@@ -209,27 +211,106 @@ cli.responders.listUsers = function () {
 
 // More user info
 cli.responders.moreUserInfo = function (string) {
-  console.log('You asked for more user info', string);
+  // Get the ID from the string
+  const array = string.split('--');
+  const userId = typeof (array[1]) == 'string' && array[1].trim().length > 0 ? array[1].trim() : false;
+  if (userId) {
+    // Lookup the user
+    _data.read('users', userId, function (err, userData) {
+      if (!err && userData) {
+        // Remove the hashed password
+        delete userData.hashedPassword;
+
+        // Print the JSON with text highlighting
+        cli.verticalSpace();
+        console.dir(userData, { 'colors': true });
+        cli.verticalSpace();
+      }
+    });
+  }
 };
 
 // List checks
 cli.responders.listChecks = function (string) {
-  console.log('You asked to list checks', string);
+  _data.list('checks', function (err, checkIds) {
+    if (!err && checkIds && checkIds.length > 0) {
+      cli.verticalSpace();
+      checkIds.forEach(function (checkId) {
+        _data.read('checks', checkId, function (err, checkData) {
+          let includeCheck = false;
+          const lowerString = string.toLowerCase();
+
+          // Get the state of the check, defaul to down
+          const state = typeof (checkData.state) == 'string' ? checkData.state : 'down';
+          // Get the state default to unknown
+          const stateOrUnknown = typeof (checkData.state) == 'string' ? checkData.state : 'unknown';
+          // If the user has specified the state, or hasn't any state include the current check accordingly
+          if (lowerString.indexOf('--' + state) > -1 || (lowerString.indexOf('--down') == -1 && lowerString.indexOf('--up') == -1)) {
+            let line = `ID: ${checkData.id} ${checkData.method.toUpperCase()} ${checkData.protocol}://${checkData.url} State: ${stateOrUnknown}`;
+            console.log(line);
+            cli.verticalSpace();
+          }
+        });
+      });
+    }
+  });
 };
 
 // More check info
 cli.responders.moreCheckInfo = function (string) {
-  console.log('You asked for more check info', string);
+  // Get the ID from the string
+  const array = string.split('--');
+  const checkId = typeof (array[1]) == 'string' && array[1].trim().length > 0 ? array[1].trim() : false;
+  if (checkId) {
+    // Lookup the user
+    _data.read('checks', checkId, function (err, checkData) {
+      if (!err && checkData) {
+        // Print the JSON with text highlighting
+        cli.verticalSpace();
+        console.dir(checkData, { 'colors': true });
+        cli.verticalSpace();
+      }
+    });
+  }
 };
 
 // List logs
 cli.responders.listLogs = function () {
-  console.log('You asked to list logs');
+  _logs.list(true, function (err, logFileNames) {
+    if (!err && logFileNames && logFileNames.length > 0) {
+      cli.verticalSpace();
+      logFileNames.forEach(function (logFileName) {
+        if (logFileName.indexOf('-') > -1) {
+          console.log(logFileName);
+          cli.verticalSpace();
+        }
+      });
+    }
+  });
 };
 
 // More logs info
 cli.responders.moreLogInfo = function (string) {
-  console.log('You asked for more log info', string);
+  // Get the logFileName from the string
+  const array = string.split('--');
+  const logFileName = typeof (array[1]) == 'string' && array[1].trim().length > 0 ? array[1].trim() : false;
+  if (logFileName) {
+    cli.verticalSpace();
+    // Decompress the log
+    _logs.decompress(logFileName, function (err, stringData) {
+      if (!err && stringData) {
+        // Split into lines
+        const array = stringData.split('\n');
+        array.forEach(function (jsonString) {
+          const logObject = helpers.parseJsonToObject(jsonString);
+          if (logObject && JSON.stringify(logObject) !== '{}') {
+            console.dir(logObject, { colors: true });
+            cli.verticalSpace();
+          }
+        });
+      }
+    });
+  }
 };
 
 // Input processor
