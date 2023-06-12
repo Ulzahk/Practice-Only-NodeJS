@@ -15,3 +15,4 @@
 
 ## Performance
 1. `NODE_DEBUG=performance node index.js`
+2. `node index-cluster.js `
