@@ -348,6 +348,12 @@ handlers.public = function (data, callback) {
  *  JSON API HANDLERS
  */
 
+// Example  error
+handlers.exampleError = function (data, callback) {
+  const err = new Error('This is an example error');
+  throw (err);
+};
+
 // Ping
 handlers.ping = function (data, callback) {
   callback(200);
