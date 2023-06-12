@@ -9,3 +9,10 @@
 
 ## Generate HTTPS
 1. `openssl req -newkey rsa:2048 -new -nodes -x509 -days 3650 -keyout key.pem -out cert.pem`
+
+## Testing
+1. `node test`
+
+## Performance
+1. `NODE_DEBUG=performance node index.js`
+2. `node index-cluster.js `

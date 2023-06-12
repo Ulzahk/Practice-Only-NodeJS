@@ -10,6 +10,7 @@ const v8 = require('v8');
 const _data = require('./data');
 const _logs = require('./logs');
 const helpers = require('./helpers');
+const childProcess = require('child_process');
 
 class _events extends events { };
 const e = new _events;
@@ -276,18 +277,23 @@ cli.responders.moreCheckInfo = function (string) {
 
 // List logs
 cli.responders.listLogs = function () {
-  _logs.list(true, function (err, logFileNames) {
-    if (!err && logFileNames && logFileNames.length > 0) {
-      cli.verticalSpace();
-      logFileNames.forEach(function (logFileName) {
-        if (logFileName.indexOf('-') > -1) {
-          console.log(logFileName);
-          cli.verticalSpace();
-        }
-      });
-    }
+  const ls = childProcess.spawn('ls', ['./.logs/']);
+  ls.stdout.on('data', function (dataObject) {
+    // Explode into separate lines
+    const dataString = dataObject.toString();
+    const logFileNames = dataString.split('\n');
+
+    cli.verticalSpace();
+    logFileNames.forEach(function (logFileName) {
+      if (typeof (logFileName) == 'string' && logFileName.length > 0 && logFileName.indexOf('-') > -1) {
+        console.log(logFileName.trim().split('.')[0]);
+        cli.verticalSpace();
+      }
+    });
   });
 };
+
+
 
 // More logs info
 cli.responders.moreLogInfo = function (string) {
