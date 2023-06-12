@@ -43,6 +43,26 @@ environments.production = {
   }
 };
 
+// Testing environment
+environments.testing = {
+  'httpPort': 4000,
+  'httpsPort': 4001,
+  'envName': 'testing',
+  'hashingSecret': 'thisIsASecret',
+  'maxChecks': 5,
+  'twilio': {
+    'accountSid': '',
+    'authToken': '',
+    'fromPhone': ''
+  },
+  'templateGlobals': {
+    'appName': 'UptimeChecker',
+    'companyName': 'NotARealCompany Inc',
+    'yearCreated': '2023',
+    'baseUrl': 'http://localhost:3000/'
+  }
+};
+
 // Determine which environment was passed as a command-line argument
 const currentEnvironment = typeof (process.env.NODE_ENV) === 'string'
   ? process.env.NODE_ENV.toLowerCase()
